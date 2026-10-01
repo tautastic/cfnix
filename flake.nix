@@ -82,7 +82,10 @@
   {
     nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit hostname stateVersion nix-jetbrains-plugins; };
+      specialArgs = {
+        inherit hostname stateVersion nix-jetbrains-plugins;
+        devShellNames = builtins.attrNames shells;
+      };
       modules = [
         home-manager.nixosModules.home-manager
         disko.nixosModules.disko

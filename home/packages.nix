@@ -20,6 +20,8 @@
     eza
     wl-clipboard
 
+    compsize
+
     gnome-disk-utility
     nautilus
 

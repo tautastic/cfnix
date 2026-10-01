@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, devShellNames, ... }:
 
 let
   bookmarks = import ./bookmarks.nix;
@@ -12,11 +12,10 @@ let
 
   flake = "${config.home.homeDirectory}/.config/nixos";
 
-  devShells = [ "c" "go" "hs" "js" "lean" "ocaml" "py" "zig" ];
   devShellAliases = lib.listToAttrs (map (lang: {
     name = "nix-${lang}";
     value = "nix develop ${flake}#${lang}";
-  }) devShells);
+  }) devShellNames);
 
   instantPrompt = ''
     if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then

@@ -1,4 +1,4 @@
-{ config, pkgs, nix-jetbrains-plugins, ... }:
+{ pkgs, nix-jetbrains-plugins, ... }:
 
 let
   pluginList = [

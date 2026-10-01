@@ -1,3 +1,5 @@
+{ ... }:
+
 {
   disko.devices.disk.main = {
     type = "disk";
@@ -28,8 +30,18 @@
               type = "btrfs";
               extraArgs = [ "-L" "ROOT" ];
               subvolumes = {
-                "@" = { mountpoint = "/"; };
-                "@home" = { mountpoint = "/home"; };
+                "@" = {
+                  mountpoint = "/";
+                  mountOptions = [ "compress=zstd" ];
+                };
+                "@home" = {
+                  mountpoint = "/home";
+                  mountOptions = [ "compress=zstd" ];
+                };
+                "@swap" = {
+                  mountpoint = "/swap";
+                  mountOptions = [ "noatime" "nofail" ];
+                };
               };
             };
           };

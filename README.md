@@ -110,29 +110,77 @@ installs `--staged` as a pre-commit hook that fails closed.
 
 `hosts/nixos/disk.nix` declares the layout with
 [disko](https://github.com/nix-community/disko): GPT, a 2560 MiB ESP, and the
-rest a LUKS container holding btrfs with `@` and `@home` subvolumes. disko
-generates `fileSystems` and `boot.initrd.luks.devices` from it, so the disk is
-described once and there is no generated `hardware-configuration.nix` to keep in
-step — and no UUID anywhere in the repo.
-
-On a machine that was installed before this spec existed, the partitions have no
-GPT names yet. `scripts/set-partlabels.sh` derives the expected names from the
-built config, refuses unless the disk matches `disk.nix`, backs the partition
-table up, sets the two names, and verifies that nothing but `name=` changed:
-
-```sh
-./scripts/set-partlabels.sh
-sudo nixos-rebuild boot --flake .#nixos   # boot, not switch
-reboot
-```
-
-`boot` rather than `switch`: all three mount device strings change, and switch
-would try to unmount /home. The previous generation keeps its own initrd, so it
-stays in the boot menu as a fallback.
+rest a LUKS container holding btrfs with `@`, `@home` and `@swap` subvolumes,
+`@` and `@home` compressed with zstd.
+disko generates `fileSystems` and `boot.initrd.luks.devices` from it, so the disk
+is described once and there is no generated `hardware-configuration.nix` to keep
+in step — and no UUID anywhere in the repo.
 
 Devices are named by GPT partition label (`disk-main-ESP`, `disk-main-luks`)
 rather than by UUID or by filesystem label. Filesystem labels would be unsafe
 here: this ESP is labelled `BOOT`, and so is every Linux installer USB stick.
+
+### Compression
+
+`/` and `/home` are mounted `compress=zstd` (level 3, btrfs's default). `@swap`
+is deliberately left uncompressed: `btrfs filesystem mkswapfile` marks the
+swapfile `NOCOW`, and btrfs never compresses a `NOCOW` file, so the option would
+be meaningless there. `/boot` is vfat and cannot compress.
+
+btrfs compresses at write time, per extent, so **the mount option only affects
+data written after it takes effect.** Everything already on the disk stays
+uncompressed until it is rewritten. To compress what is already there, once:
+
+```sh
+sudo btrfs filesystem defragment -r -czstd /
+sudo btrfs filesystem defragment -r -czstd /home
+compsize /home          # check what it achieved
+```
+
+That rewrites extents, so it takes a while and it unshares any reflinked or
+snapshot-shared data — worth knowing before running it on a machine that has
+snapshots. This one has none.
+
+### Swap
+
+16 GiB, as a swapfile in its own `@swap` subvolume. The size matches RAM, so
+hibernation stays possible later; the dedicated subvolume means snapshotting `@`
+stays possible too, which an active swapfile inside `@` would block.
+
+NixOS creates the file itself on first activation, and does it correctly on
+btrfs — `mkswap-swap-swapfile.service` uses `btrfs filesystem mkswapfile`, which
+marks the file `NOCOW` as btrfs requires. Two guards sit on that unit:
+
+- `RequiresMountsFor=/swap`, generated automatically, so it cannot run before the
+  subvolume is mounted;
+- `ConditionPathIsMountPoint=/swap`, set in `hosts/nixos/hardware.nix`, so if the
+  `@swap` subvolume is missing the unit is skipped rather than writing a 16 GiB
+  file into the root subvolume by mistake.
+
+The `/swap` mount is `nofail`, so a missing subvolume can never drop the boot
+into emergency mode.
+
+Hibernation is deliberately **not** configured: `resume_offset` is a
+machine-specific number that would have to be read off the disk with
+`btrfs inspect-internal map-swapfile` and committed, which is exactly the kind of
+value this repo just finished removing.
+
+### Aligning an existing install
+
+On a machine installed before this spec existed, the partitions have no GPT names
+and `@swap` does not exist. `scripts/align-disk.sh` reads the expected names and
+subvolumes out of the built config, refuses unless the disk matches `disk.nix`,
+backs up the partition table, and creates whatever is missing:
+
+```sh
+./scripts/align-disk.sh
+sudo nixos-rebuild switch --flake .#nixos
+```
+
+It is idempotent — with everything already in place it writes nothing and needs
+no `sudo`. If it has to rename partitions, use `nixos-rebuild boot` and reboot
+instead of `switch`, because the mount device strings change and `switch` would
+try to unmount `/home`.
 
 ### Dev shells
 

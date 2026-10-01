@@ -7,7 +7,12 @@
   boot.kernelModules = [ "kvm-amd" ];
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   hardware.enableRedistributableFirmware = lib.mkDefault true;
-  swapDevices = [ ];
+  systemd.services."mkswap-swap-swapfile".unitConfig.ConditionPathIsMountPoint = "/swap";
+
+  swapDevices = [{
+    device = "/swap/swapfile";
+    size = 16 * 1024;
+  }];
 
   boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];

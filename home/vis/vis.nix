@@ -1,3 +1,5 @@
+{ ... }:
+
 {
   imports = [
     ./program-vis.nix
