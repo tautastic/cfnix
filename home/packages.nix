@@ -8,6 +8,7 @@
     resvg
     imagemagick
     exiftool
+    mediainfo
     picard
     amberol
     loupe

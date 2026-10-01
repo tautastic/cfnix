@@ -9,6 +9,7 @@
 
     plugins = {
       inherit (pkgs.yaziPlugins) full-border;
+      inherit (pkgs.yaziPlugins) mediainfo;
     };
 
     flavors = {
@@ -38,7 +39,6 @@
         tab_size = 1;
         max_width = 600;
         max_height = 900;
-        cache_dir = "${config.xdg.cacheHome}/yazi";
         ueberzug_scale = 1;
         ueberzug_offset = [ 0 0 0 0 ];
       };
@@ -51,12 +51,14 @@
 
       opener = {
         edit = [ { run = ''$EDITOR %s''; block = true; desc = "Edit"; } ];
-        xdot = [ { run = ''xdot "$1"''; orphan = true; desc = "Open with xdot"; } ];
       };
 
-      open = {
-        prepend_rules = [
-          { url = "*.dot"; use = ["xdot" "edit"]; }
+      plugin = {
+        prepend_preloaders = [
+          { mime = "{audio,video,image}/*"; run = "mediainfo"; }
+        ];
+        prepend_previewers = [
+          { mime = "{audio,video,image}/*"; run = "mediainfo"; }
         ];
       };
     };
