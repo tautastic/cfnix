@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Rebuilds this machine from the flake at ~/.config/nixos.
+#
+#   nix-make              nh os switch --install-bootloader, from the flake
+#   nix-make -b|--boot    nh os boot --install-bootloader: the new generation
+#                         becomes the boot default, the running system is untouched
+#   nix-make -u|--update  nix flake update (every input the flake locks)
+#   nix-make -h|--help    this text
+#
+# Writes its own zsh completion to the user's site-functions directory on
+# every run, since it is a plain script rather than a completion-aware CLI.
+
+set -euo pipefail
+
+FLAKE="$HOME/.config/nixos"
+
+usage() { awk 'NR>1 && /^#/ { sub(/^# ?/, ""); print; next } NR>1 { exit }' "$0"; }
+
+install_completion() {
+  local dir="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions"
+  local file="$dir/_nix-make"
+  local script
+  script=$(cat <<'ZSH'
+#compdef nix-make
+_nix-make() {
+  _arguments \
+    '(-b --boot)'{-b,--boot}'[make the new generation the boot default, without switching now]' \
+    '(-u --update)'{-u,--update}'[update every input the flake locks]' \
+    '(-h --help)'{-h,--help}'[show usage]'
+}
+_nix-make "$@"
+ZSH
+)
+  [[ -f $file ]] && [[ "$(cat "$file")" == "$script" ]] && return 0
+  mkdir -p "$dir"
+  printf '%s\n' "$script" > "$file"
+  chmod 644 "$file"
+  rm -f "${ZDOTDIR:-$HOME}/.zcompdump"
+}
+
+install_completion
+
+case "${1:-}" in
+  -b | --boot)
+    exec nh os boot --install-bootloader "$FLAKE"
+    ;;
+  -u | --update)
+    exec nix flake update --flake "$FLAKE"
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  "")
+    exec nh os switch --install-bootloader "$FLAKE"
+    ;;
+  *)
+    echo "nix-make: unknown option: $1" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

@@ -143,7 +143,6 @@ in
       diff = "diff --color=auto";
       ls = "eza -lAh --color=auto --git --header --group --group-directories-first";
       cpr = "rsync -HAXhaxvPS --numeric-ids --stats";
-      nix-make = "nh os switch --install-bootloader ${flake}";
     } // dirAliases // fileAliases // devShellAliases;
   };
 }

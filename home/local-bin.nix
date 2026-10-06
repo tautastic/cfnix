@@ -26,4 +26,9 @@ in
     source = ../bin/redact;
     executable = true;
   };
+
+  home.file.".local/bin/nix-make" = {
+    source = ../bin/nix-make;
+    executable = true;
+  };
 }

@@ -36,8 +36,8 @@
 
     age
   ] ++ [
-    pkgs.unstable.pnpm_12
     pkgs.unstable.biome
+    pkgs.unstable.pnpm
     pkgs.unstable.claude-code
   ];
 }
