@@ -183,23 +183,6 @@ machine-specific number that would have to be read off the disk with
 `btrfs inspect-internal map-swapfile` and committed, which is exactly the kind of
 value this repo just finished removing.
 
-### Aligning an existing install
-
-On a machine installed before this spec existed, the partitions have no GPT names
-and `@swap` does not exist. `scripts/align-disk.sh` reads the expected names and
-subvolumes out of the built config, refuses unless the disk matches `disk.nix`,
-backs up the partition table, and creates whatever is missing:
-
-```sh
-./scripts/align-disk.sh
-sudo nixos-rebuild switch --flake .#nixos
-```
-
-It is idempotent — with everything already in place it writes nothing and needs
-no `sudo`. If it has to rename partitions, use `nixos-rebuild boot` and reboot
-instead of `switch`, because the mount device strings change and `switch` would
-try to unmount `/home`.
-
 ### Dev shells
 
 `nix develop .#go`, and the same for `c hs js lean ocaml py zig`. Each one drops
