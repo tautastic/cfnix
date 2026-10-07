@@ -5,8 +5,8 @@ for everything under `~`, and a zsh / powerlevel10k / kitty / vis / yazi /
 zathura / librewolf setup.
 
 The repo is public and nothing identifying is committed. The two files that hold
-private values are committed **tokenised** and hydrated in place on the machine,
-so a clone builds and `git` never sees a real value.
+private values are committed **tokenised** and a git filter fills the real
+values back in on the machine, so a clone builds and a commit never contains one.
 
 ## From a clean install
 
@@ -14,17 +14,21 @@ so a clone builds and `git` never sees a real value.
 git clone <this repo> ~/.config/nixos
 cd ~/.config/nixos
 
-cp /path/to/key.txt ~/.config/age/     # carried from the old machine
-./bin/redact hydrate                   # fills local/*, pins them, drops nix's eval cache
-./scripts/install-hooks.sh             # pre-commit secret scan
+mkdir -p ~/.config/redact
+cp /path/to/identity.txt ~/.config/redact/   # carried from the old machine
+nix shell .#redact -c redact init            # git filter, hooks, fills local/*
 
 sudo nixos-rebuild switch --flake .#nixos
 ```
 
-Without the age key, `redact hydrate` prompts for each `@@<NAME>@@` and saves the
-answer, so a from-scratch setup works too. Until it has run, evaluation stops
-with a message naming the tokens that are still placeholders — it will not build
-a system for a user who does not exist.
+`redact init` configures the git filter, installs the pre-commit, post-checkout
+and post-merge hooks, and hydrates `local/*` from `.redact/secrets.age`. Until it
+has run, evaluation stops with a message naming the tokens that are still
+placeholders — it will not build a system for a user who does not exist.
+
+The filter and the hooks call `redact`, so it has to be on `PATH` whenever git
+touches this repo. `modules/packages.nix` installs it, which means from the first
+switch on; until then run git inside `nix shell .#redact`.
 
 After the first switch, `nh os switch` is the short form.
 
@@ -32,79 +36,93 @@ After the first switch, `nh os switch` is the short form.
 
 ```
 flake.nix          inputs, the one nixosConfiguration, and the devShells
-.redacted          which files carry private values
+.gitattributes     which files run through the redact filter
 local/             those files
 
-secrets.age        the encrypted token -> value map; committed, useless without the key
-bin/redact         the tool that manages it; needs to run before anything is built
+.redact/           secrets.age, the encrypted NAME -> value store, and recipients,
+                   who can read it; committed, useless without an identity
 hosts/nixos/       this machine: module list, disk layout, hardware facts
 modules/           system modules, imported by hosts/nixos
 home/              everything under ~, imported by hosts/nixos via home-manager
-scripts/           the pre-commit hook installer
 ```
 
 ## Private values
 
-`.redacted` lists the files that carry private values -- currently `local/settings.nix`
-and `local/ssh.conf`. Everything `redact` does is scoped to that list, which is why
-this README can quote a token without being rewritten.
+`.gitattributes` marks the files that carry private values with `filter=redact`
+-- currently `local/settings.nix` and `local/ssh.conf`. Everything `redact` does
+to files is scoped to those, which is why this README can quote a token without
+being rewritten.
 
 `local/settings.nix` and `local/ssh.conf` are **tracked**, and what is committed
 is the tokenised form:
 
 ```nix
-username = "@@SYS_USER@@";
+username = "REDACTED[SYS_USER]";
 ```
 
 `redact hydrate` rewrites those tokens in place with the real values from
-`secrets.age` and then sets git's `skip-worktree` bit, so:
+`.redact/secrets.age`, and git's clean filter turns every stored value back into
+its token whenever git reads the file, so:
 
 - the working tree holds the real values, which is what Nix evaluates;
-- `git status` is clean and `git add -A` cannot stage them;
+- `git status` is clean and `git add -A` can only stage the tokenised form;
 - `git` — and therefore GitHub — only ever sees tokens.
 
 This is why the flake can be referenced as plain `.#nixos`. Nix's git fetcher
 reads tracked files from the working tree, so no `path:` prefix is needed and
 `.git` is not copied into the store.
 
+Nix caches evaluations by commit, not by content, so a hydrate that changes a
+value would otherwise leave a stale cache behind. `redact.postHydrate` in
+`home/git/git.nix` clears it after every hydrate.
+
 | command | when |
 |---|---|
-| `redact hydrate` | after a clone, or after changing a value in the map |
-| `redact edit` | change the map itself |
-| `redact set . NAME < file` | set one value from a file |
-| `redact stage [file]` | tokenise the working copy into the git index, ready to commit |
+| `redact hydrate` | after a clone or pull changed a value; the post-checkout and post-merge hooks run it |
+| `redact set NAME` | store a value, from stdin or a hidden prompt; redacted files are rehydrated |
+| `redact edit NAME` | change a value in `$EDITOR`; rehydrates on save |
+| `redact add PATH…` | mark a file as redacted and stage it tokenised |
+| `redact list` | names, where they are used, and which have no value |
+| `redact status` | check the identity, store, recipients, filter, hooks and files |
 | `redact check [--staged\|--history]` | scan for a value that should have been tokenised |
 
 Two rules follow from the scheme:
 
 - **A new file has to be `git add`ed before Nix can see it.** Untracked files are
   invisible to the git fetcher; the error names the file.
-- **To change the *shape* of a private file** (a third git identity, say), edit
-  the real file, then `redact stage` it. The index gets the tokenised version.
-  Add the new token's value with `redact set` first, or the scan will refuse it.
+- **To change the *shape* of a private file** (a third git identity, say), store
+  the new value with `redact set NAME` first, then edit the real file and
+  `git add` it. The filter puts the token in the index; a value that is not
+  stored has nothing to be replaced by.
+
+Without its identity nobody can read `.redact/secrets.age`, so keep
+`~/.config/redact/identity.txt` backed up.
 
 ### Adding an ssh host
 
 `local/ssh.conf` is a plain `ssh_config`, read verbatim into
-`/etc/ssh/ssh_config` by `modules/services/openssh.nix`.
+`/etc/ssh/ssh_config` by `modules/services/openssh.nix`. Its only content is the
+token `REDACTED[SSH_EXTRA_CONFIG]`, so the hosts live in that value:
 
 ```sh
-$EDITOR local/ssh.conf
-redact set . SSH_EXTRA_CONFIG < local/ssh.conf   # so it survives a re-clone
+redact edit SSH_EXTRA_CONFIG
 nh os switch
 ```
 
 ### The scanner
 
-`redact check`'s deny list *is* the map, so it needs no separate maintenance.
-It also catches structural secrets the map cannot know about: password hashes,
-SCRAM verifiers, private keys, hardware UUIDs, public IPs and real email
-addresses.
+`redact check` searches for every stored value, and for every retired one: a
+value replaced by `redact set` stays on the deny list. So it needs no separate
+maintenance. It also catches structural secrets the store cannot know about:
+private keys, age identities, password hashes, SCRAM verifiers, API tokens,
+home directories, email addresses, public IPs and UUIDs.
 
-The tree scan deliberately skips the `skip-worktree` files — those hold real
-values on purpose. `--staged` and `--history` do not skip them, and those are the
-only two places a value could actually escape. `scripts/install-hooks.sh`
-installs `--staged` as a pre-commit hook that fails closed.
+The default run scans the working tree as it would be committed, redacted files
+tokenised first. `--staged` scans the index and `--history` every blob reachable
+from any ref; those are the places a value could actually escape. `redact init`
+installs `--staged` as the pre-commit hook, which fails closed when `redact` is
+not on `PATH`. A false positive is allowed with a regular expression in
+`.redact/allow`.
 
 ## The disk
 

@@ -111,13 +111,35 @@
         "type": "github"
       }
     },
+    "redact": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791413257,
+        "narHash": "sha256-pPmRgPPAnB271Q6XVmQC4pgDaqF5mz78iuCLjqcf/qg=",
+        "owner": "scuba-plaza",
+        "repo": "redact",
+        "rev": "1162ef81309b95927e91f9884d0e366047797449",
+        "type": "github"
+      },
+      "original": {
+        "owner": "scuba-plaza",
+        "ref": "v1.0.1",
+        "repo": "redact",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
         "home-manager": "home-manager",
         "nix-jetbrains-plugins": "nix-jetbrains-plugins",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "redact": "redact"
       }
     },
     "systems": {

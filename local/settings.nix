@@ -1,21 +1,21 @@
 {
-  username = "@@SYS_USER@@";
+  username = "REDACTED[SYS_USER]";
 
-  passwordHash = "@@USER_PASSWORD_HASH@@";
+  passwordHash = "REDACTED[USER_PASSWORD_HASH]";
 
-  postgresVerifier = "@@POSTGRES_SCRAM@@";
+  postgresVerifier = "REDACTED[POSTGRES_SCRAM]";
 
   git = {
-    default = "@@GIT_USER_1@@";
+    default = "REDACTED[GIT_USER_1]";
     identities = {
-      "@@GIT_USER_1@@" = {
-        email = "@@GIT_EMAIL_1@@";
-        key = "@@GIT_USER_1@@_id_ed25519";
+      "REDACTED[GIT_USER_1]" = {
+        email = "REDACTED[GIT_EMAIL_1]";
+        key = "REDACTED[GIT_USER_1]_id_ed25519";
         color = 66;
       };
-      "@@GIT_USER_2@@" = {
-        email = "@@GIT_EMAIL_2@@";
-        key = "@@GIT_USER_2@@_id_ed25519";
+      "REDACTED[GIT_USER_2]" = {
+        email = "REDACTED[GIT_EMAIL_2]";
+        key = "REDACTED[GIT_USER_2]_id_ed25519";
         color = 178;
       };
     };

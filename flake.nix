@@ -19,9 +19,14 @@
       url = "github:nix-community/nix-jetbrains-plugins";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    redact = {
+      url = "github:scuba-plaza/redact/v1.0.1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, disko, nix-jetbrains-plugins, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, disko, nix-jetbrains-plugins, redact, ... }:
   let
     system = "x86_64-linux";
     hostname = "nixos";
@@ -29,7 +34,7 @@
 
     settings = import ./local/settings.nix;
 
-    tokenLike = s: builtins.match ".*@@[A-Z][A-Z0-9_]*@@.*" s != null;
+    tokenLike = s: builtins.match ".*REDACTED\\[[A-Z][A-Z0-9_]*].*" s != null;
     hits = v:
       if builtins.isString v then (if tokenLike v then [ v ] else [ ])
       else if builtins.isAttrs v then
@@ -46,12 +51,16 @@
 
           ${builtins.concatStringsSep "\n          " unhydrated}
 
-        Fill them in from secrets.age:
+        Fill them in from .redact/secrets.age:
 
             redact hydrate
 
-        It rewrites the file in place and pins it with skip-worktree, so the
-        real values stay in your working tree and never reach a commit.
+        In a fresh clone, set the tool up first:
+
+            nix shell .#redact -c redact init
+
+        The real values stay in your working tree; git's clean filter turns
+        them back into tokens on commit, so they never reach one.
       '';
 
     overlays = [
@@ -61,6 +70,7 @@
           config.allowUnfree = true;
         };
       })
+      redact.overlays.default
     ];
 
     pkgs = import nixpkgs {
@@ -104,6 +114,8 @@
           mkdir -p "$care" && cd "$care"
         '';
       }) shells;
+
+    packages.${system}.redact = pkgs.redact;
 
     formatter.${system} = pkgs.nixfmt;
   };

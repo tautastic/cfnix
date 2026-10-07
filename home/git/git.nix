@@ -48,6 +48,7 @@ in {
       user.name = default;
       user.email = identities.${default}.email;
       core.sshCommand = sshCommand identities.${default};
+      redact.postHydrate = "rm -rf \"\${XDG_CACHE_HOME:-$HOME/.cache}\"/nix/eval-cache-v*";
     };
   };
 

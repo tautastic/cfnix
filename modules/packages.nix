@@ -22,5 +22,6 @@
     which
     curl wget rsync
     less
+    redact
   ];
 }

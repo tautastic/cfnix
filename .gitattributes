@@ -1,0 +1,5 @@
+/.redact/secrets.age merge=redact-store
+/local/settings.nix filter=redact
+/local/ssh.conf filter=redact
+/flake.nix -redact-scan
+/flake.lock -redact-scan
