@@ -24,9 +24,14 @@
       url = "github:scuba-plaza/redact/v1.0.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    mufradat = {
+      url = "github:scuba-plaza/mufradat";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, disko, nix-jetbrains-plugins, redact, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, disko, nix-jetbrains-plugins, redact, mufradat, ... }:
   let
     system = "x86_64-linux";
     hostname = "nixos";
@@ -71,6 +76,7 @@
         };
       })
       redact.overlays.default
+      mufradat.overlays.default
     ];
 
     pkgs = import nixpkgs {
