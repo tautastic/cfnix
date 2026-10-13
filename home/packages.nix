@@ -9,7 +9,6 @@
     imagemagick
     exiftool
     mediainfo
-    picard
     amberol
     loupe
     showtime
@@ -38,6 +37,7 @@
 
     mufradat
   ] ++ [
+    pkgs.unstable.picard
     pkgs.unstable.biome
     pkgs.unstable.pnpm
     pkgs.unstable.claude-code
