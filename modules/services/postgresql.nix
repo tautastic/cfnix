@@ -2,7 +2,7 @@
 
 {
   services.postgresql = {
-    enable = true;
+    enable = false;
 
     settings.listen_addresses = "localhost";
 
