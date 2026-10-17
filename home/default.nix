@@ -11,16 +11,15 @@
     ./librewolf.nix
     ./local-bin.nix
     ./packages.nix
+    ./toolchains.nix
     ./vis/vis.nix
+    ./xdg.nix
     ./yazi/yazi.nix
     ./zathura.nix
     ./zsh/zsh.nix
   ];
 
   home.stateVersion = stateVersion;
-
-  xdg.userDirs.enable = true;
-  xdg.userDirs.createDirectories = true;
 
   programs.home-manager.enable = true;
 

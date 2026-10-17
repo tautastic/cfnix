@@ -1,8 +1,14 @@
-{ config, lib, pkgs, devShellNames, ... }:
+{ config, lib, pkgs, toolchains, ... }:
 
 let
   bookmarks = import ./bookmarks.nix;
-  inherit (bookmarks) dirBookmarks fileBookmarks;
+  inherit (bookmarks) fileBookmarks;
+
+  careBookmarks = lib.listToAttrs (map (lang: {
+    name = "lc${lang}";
+    value = "~/.local/care/${lang}";
+  }) (lib.attrNames toolchains));
+  dirBookmarks = bookmarks.dirBookmarks // careBookmarks;
 
   dirAliases = builtins.mapAttrs (_: path: "cd ${path} && ls") dirBookmarks;
   fileAliases = builtins.mapAttrs (_: path: "$EDITOR ${path}") fileBookmarks;
@@ -10,12 +16,7 @@ let
   namedDirs = lib.concatStringsSep "\n"
     (lib.mapAttrsToList (name: path: "hash -d ${name}=${path}") dirBookmarks);
 
-  flake = "${config.home.homeDirectory}/.config/nixos";
-
-  devShellAliases = lib.listToAttrs (map (lang: {
-    name = "nix-${lang}";
-    value = "nix develop ${flake}#${lang}";
-  }) devShellNames);
+  toolchainEnv = lib.foldl' (acc: t: acc // (t.env or { })) { } (lib.attrValues toolchains);
 
   instantPrompt = ''
     if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
@@ -33,7 +34,6 @@ let
 
     path+=(
       $HOME/.local/bin
-      $HOME/.elan/bin
       $GOPATH/bin
       $HOME/.local/share/pnpm/bin
     )
@@ -71,8 +71,8 @@ let
     [[ -f "${config.xdg.configHome}/zsh/.p10k.zsh" ]] && source "${config.xdg.configHome}/zsh/.p10k.zsh"
 
     # Written by the ocaml devShell, absent otherwise.
-    [[ ! -r "${config.home.homeDirectory}/.opam/opam-init/init.zsh" ]] \
-      || source "${config.home.homeDirectory}/.opam/opam-init/init.zsh" >/dev/null 2>&1
+    [[ ! -r "$OPAMROOT/opam-init/init.zsh" ]] \
+      || source "$OPAMROOT/opam-init/init.zsh" >/dev/null 2>&1
 
     # Named directories
     ${namedDirs}
@@ -117,12 +117,8 @@ in
       EDITOR = "vis";
       VISUAL = "vis";
       BROWSER = "librewolf";
-      XDG_CACHE_HOME = "$HOME/.cache";
-      XDG_CONFIG_HOME = "$HOME/.config";
-      XDG_DATA_HOME = "$HOME/.local/share";
       LOCAL_BIN = "$HOME/.local/bin";
-      GOPATH = "$HOME/.local/go";
-    };
+    } // toolchainEnv;
 
     initContent = lib.mkMerge [
       (lib.mkOrder 500 instantPrompt)
@@ -143,6 +139,6 @@ in
       diff = "diff --color=auto";
       ls = "eza -lAh --color=auto --git --header --group --group-directories-first";
       cpr = "rsync -HAXhaxvPS --numeric-ids --stats";
-    } // dirAliases // fileAliases // devShellAliases;
+    } // dirAliases // fileAliases;
   };
 }

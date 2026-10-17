@@ -56,7 +56,7 @@
     xplr                    # xplr shell (https://github.com/sayanarijit/xplr)
     vim_shell               # vim shell indicator (:sh)
     midnight_commander      # midnight commander shell (https://midnight-commander.org/)
-    nix_shell               # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
+    toolchain
     chezmoi_shell           # chezmoi shell (https://www.chezmoi.io/)
     todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
     timewarrior             # timewarrior tracking status (https://timewarrior.net/)
@@ -83,7 +83,7 @@
     typeset -g POWERLEVEL9K_EMPTY_LINE_LEFT_PROMPT_FIRST_SEGMENT_END_SYMBOL='%{%}'
     typeset -g POWERLEVEL9K_EMPTY_LINE_RIGHT_PROMPT_FIRST_SEGMENT_START_SYMBOL='%{%}'
   fi
-  typeset -g POWERLEVEL9K_BACKGROUND=234
+  typeset -g POWERLEVEL9K_BACKGROUND=233
   typeset -g POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR='%242F\u2502'
   typeset -g POWERLEVEL9K_RIGHT_SUBSEGMENT_SEPARATOR='%242F\u2502'
   typeset -g POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR=''
@@ -247,7 +247,7 @@
   typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FORMAT='d h m s'
   typeset -g POWERLEVEL9K_BACKGROUND_JOBS_VERBOSE=false
   typeset -g POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND=37
-  typeset -g POWERLEVEL9K_DIRENV_FOREGROUND=178
+  typeset -g POWERLEVEL9K_DIRENV_FOREGROUND='#ff4d4d'
   typeset -g POWERLEVEL9K_ASDF_FOREGROUND=66
   typeset -g POWERLEVEL9K_ASDF_SOURCES=(shell local global)
   typeset -g POWERLEVEL9K_ASDF_PROMPT_ALWAYS_SHOW=false
@@ -279,7 +279,7 @@
   typeset -g POWERLEVEL9K_XPLR_FOREGROUND=72
   typeset -g POWERLEVEL9K_VIM_SHELL_FOREGROUND=34
   typeset -g POWERLEVEL9K_MIDNIGHT_COMMANDER_FOREGROUND=178
-  typeset -g POWERLEVEL9K_NIX_SHELL_FOREGROUND=74
+  typeset -g POWERLEVEL9K_TOOLCHAIN_ICON_BEFORE_CONTENT=true
   typeset -g POWERLEVEL9K_CHEZMOI_SHELL_FOREGROUND=33
   typeset -g POWERLEVEL9K_DISK_USAGE_NORMAL_FOREGROUND=35
   typeset -g POWERLEVEL9K_DISK_USAGE_WARNING_FOREGROUND=220
@@ -443,11 +443,14 @@
   typeset -g POWERLEVEL9K_TIME_FOREGROUND=66
   typeset -g POWERLEVEL9K_TIME_FORMAT='%D{%H:%M:%S}'
   typeset -g POWERLEVEL9K_TIME_UPDATE_ON_COMMAND=false
-  function prompt_example() {
-    p10k segment -f 208 -i '⭐' -t 'hello, %n'
-  }
-  function instant_prompt_example() {
-    prompt_example
+  function prompt_toolchain() {
+    if [[ -n $DEV_TOOLCHAIN_ICON ]]; then
+      p10k segment -f "${DEV_TOOLCHAIN_COLOR:-#7ebae4}" -i $DEV_TOOLCHAIN_ICON
+    elif [[ -n $DEV_TOOLCHAIN ]]; then
+      p10k segment -f "${DEV_TOOLCHAIN_COLOR:-#7ebae4}" -i $'\uF313' -t $DEV_TOOLCHAIN
+    elif [[ -n $IN_NIX_SHELL ]]; then
+      p10k segment -f "${DEV_TOOLCHAIN_COLOR:-#7ebae4}" -i $'\uF313'
+    fi
   }
   typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=always
   typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet

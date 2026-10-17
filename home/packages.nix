@@ -28,19 +28,13 @@
     anki
     localsend
 
-    gcc
-    gnumake
-    go
-    nodejs_24
-
     age
 
     mufradat
   ] ++ [
     pkgs.unstable.picard
-    pkgs.unstable.biome
-    pkgs.unstable.pnpm
     pkgs.unstable.claude-code
     pkgs.unstable.yt-dlp
+    pkgs.unstable.mistral-vibe
   ];
 }

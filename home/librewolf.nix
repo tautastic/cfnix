@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 
 {
   programs.librewolf = {
@@ -44,4 +44,13 @@
       "webgl.disabled" = false;
     };
   };
+
+  home.file = {
+    ".librewolf/librewolf.overrides.cfg".enable = false;
+    ".librewolf/native-messaging-hosts".enable = false;
+    ".mozilla/native-messaging-hosts".enable = false;
+  };
+
+  xdg.configFile."librewolf/librewolf/librewolf.overrides.cfg".text =
+    config.home.file.".librewolf/librewolf.overrides.cfg".text;
 }

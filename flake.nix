@@ -84,23 +84,16 @@
       config.allowUnfree = true;
     };
 
-    shells = {
-      c     = { banner = "🔧 C/C++ environment ready";                            packages = p: [ p.gcc p.gnumake p.cmake ]; };
-      go    = { banner = "🐹 Go environment ready $(go version)";                  packages = p: [ p.go ]; };
-      hs    = { banner = "λ Haskell environment ready $(ghc --numeric-version)";  packages = p: [ p.ghc ]; };
-      js    = { banner = "📦 Node.js environment ready";                           packages = p: [ p.nodejs ]; };
-      lean  = { banner = "📚 Lean environment ready";                              packages = p: [ p.elan p.lean4 ]; };
-      ocaml = { banner = "🐫 OCaml environment ready";                             packages = p: [ p.opam p.ocaml p.dune ]; };
-      py    = { banner = "🐍 Python environment ready";                            packages = p: [ p.python3 ]; };
-      zig   = { banner = "⚡ Zig environment ready $(zig version)";                packages = p: [ p.zig ]; };
-    };
+    toolchains = import ./toolchains.nix;
+
+    exportsOf = env: pkgs.lib.concatStringsSep "\n"
+      (pkgs.lib.mapAttrsToList (k: v: "export ${k}=\"${v}\"") env);
   in
   {
     nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {
-        inherit hostname stateVersion nix-jetbrains-plugins;
-        devShellNames = builtins.attrNames shells;
+        inherit hostname stateVersion nix-jetbrains-plugins toolchains;
       };
       modules = [
         home-manager.nixosModules.home-manager
@@ -114,12 +107,12 @@
     devShells.${system} = builtins.mapAttrs (name: def:
       pkgs.mkShell {
         packages = def.packages pkgs;
-        shellHook = ''
-          echo "${def.banner}"
-          care="$HOME/.local/care/${name}"
-          mkdir -p "$care" && cd "$care"
-        '';
-      }) shells;
+        shellHook = exportsOf ((def.env or { }) // {
+          DEV_TOOLCHAIN = name;
+          DEV_TOOLCHAIN_ICON = def.icon or "";
+          DEV_TOOLCHAIN_COLOR = def.color or "";
+        });
+      }) toolchains;
 
     packages.${system}.redact = pkgs.redact;
 
