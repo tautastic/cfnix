@@ -197,9 +197,8 @@ the overrides to `~/.config/librewolf/librewolf`, which LibreWolf uses whenever
 `~/.librewolf` does not exist.
 
 What cannot be moved stays: `~/.ssh` (OpenSSH), `~/.pki` (NSS's shared certificate
-database), `~/.nv` (the NVIDIA driver's profiles), `~/.java` (the JDK's
-preferences), `~/.claude` and `~/.claude.json` (Claude Code), and `~/.zshenv`, the
-one stub that points zsh at `~/.config/zsh`.
+database), `~/.java` (the JDK's preferences), `~/.claude` and `~/.claude.json`
+(Claude Code), and `~/.zshenv`, the one stub that points zsh at `~/.config/zsh`.
 
 ## Checking a change
 
