@@ -31,6 +31,7 @@
     age
 
     mufradat
+    music-manager
   ] ++ [
     pkgs.unstable.picard
     pkgs.unstable.claude-code

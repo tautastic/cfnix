@@ -29,9 +29,14 @@
       url = "github:scuba-plaza/mufradat";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    music-manager = {
+      url = "github:scuba-plaza/music-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, disko, nix-jetbrains-plugins, redact, mufradat, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, disko, nix-jetbrains-plugins, redact, mufradat, music-manager, ... }:
   let
     system = "x86_64-linux";
     hostname = "nixos";
@@ -77,6 +82,7 @@
       })
       redact.overlays.default
       mufradat.overlays.default
+      music-manager.overlays.default
     ];
 
     pkgs = import nixpkgs {
