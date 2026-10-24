@@ -36,6 +36,5 @@
     pkgs.unstable.picard
     pkgs.unstable.claude-code
     pkgs.unstable.yt-dlp
-    pkgs.unstable.mistral-vibe
   ];
 }
