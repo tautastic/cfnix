@@ -28,7 +28,7 @@
   boot.initrd.systemd.emergencyAccess = true;
 
   services.logind.settings.Login = {
-    HandleLidSwitch = "suspend";
-    HandleLidSwitchExternalPower = "suspend";
+    HandleLidSwitch = "lock";
+    HandleLidSwitchExternalPower = "ignore";
   };
 }
