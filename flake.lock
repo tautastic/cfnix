@@ -84,11 +84,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792869005,
-        "narHash": "sha256-xM6md/eZfZXioILPS/IqDdAfMuRlb77D5clev6LmwKk=",
+        "lastModified": 1793315407,
+        "narHash": "sha256-fWrevydfCEG+rQgbzlc2tcU9bmRLGPdVxJsU9cdXk6c=",
         "owner": "scuba-plaza",
         "repo": "music-manager",
-        "rev": "f000b96d354d6349fbb9c057f6e2c354686826e4",
+        "rev": "c26822739b923b5abb116bb8604196fda9530417",
         "type": "github"
       },
       "original": {

@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 
 {
   dconf.settings = {
@@ -15,7 +15,7 @@
       remember-recent-files = false;
       remove-old-trash-files = true;
       remove-old-temp-files = true;
-      old-files-age = "uint32 1";
+      old-files-age = lib.hm.gvariant.mkUint32 1;
     };
     "org/gnome/desktop/notifications".show-in-lock-screen = false;
     "org/gnome/desktop/location".enabled = false;

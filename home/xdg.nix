@@ -16,6 +16,11 @@ in
     };
   };
 
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications."x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
+  };
+
   home.sessionVariables = {
     DOCKER_CONFIG = "${config.xdg.configHome}/docker";
     VIBE_HOME = "${config.xdg.configHome}/vibe";

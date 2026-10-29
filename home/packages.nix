@@ -25,7 +25,7 @@ in
     imagemagick
     exiftool
     mediainfo
-    amberol
+    gapless
     loupe
     showtime
 
