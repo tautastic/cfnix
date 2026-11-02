@@ -7,10 +7,11 @@
     ./git/git.nix
     ./gnome/appearance.nix
     ./gnome/keybindings.nix
+    ./gnome/slideshow.nix
     ./jetbrains.nix
     ./kitty/kitty.nix
     ./librewolf.nix
-    ./local-bin.nix
+    ./bin/bin.nix
     ./packages.nix
     ./toolchains.nix
     ./vis/vis.nix

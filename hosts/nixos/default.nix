@@ -1,4 +1,4 @@
-{ config, hostname, stateVersion, nix-jetbrains-plugins, toolchains, ... }:
+{ config, hostname, stateVersion, nix-jetbrains-plugins, toolchains, gnome-slideshow, ... }:
 
 {
   imports = [
@@ -27,7 +27,7 @@
     useUserPackages = true;
     extraSpecialArgs = {
       inherit (config) me;
-      inherit stateVersion nix-jetbrains-plugins toolchains;
+      inherit stateVersion nix-jetbrains-plugins toolchains gnome-slideshow;
     };
     users.${config.me.username} = import ../../home;
   };

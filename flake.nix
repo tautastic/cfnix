@@ -34,9 +34,11 @@
       url = "github:scuba-plaza/music-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    gnome-slideshow.url = "path:./modules/gnome-slideshow";
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, disko, nix-jetbrains-plugins, redact, mufradat, music-manager, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, disko, nix-jetbrains-plugins, redact, mufradat, music-manager, gnome-slideshow, ... }:
   let
     system = "x86_64-linux";
     hostname = "nixos";
@@ -99,7 +101,7 @@
     nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {
-        inherit hostname stateVersion nix-jetbrains-plugins toolchains;
+        inherit hostname stateVersion nix-jetbrains-plugins toolchains gnome-slideshow;
       };
       modules = [
         home-manager.nixosModules.home-manager

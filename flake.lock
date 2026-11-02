@@ -36,6 +36,17 @@
         "type": "github"
       }
     },
+    "gnome-slideshow": {
+      "locked": {
+        "path": "./modules/gnome-slideshow",
+        "type": "path"
+      },
+      "original": {
+        "path": "./modules/gnome-slideshow",
+        "type": "path"
+      },
+      "parent": []
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -64,11 +75,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793221671,
-        "narHash": "sha256-BVFsmcd1RgFvQnpDJbcQ/GNsvGTwBcM7xHe+WJ8OwQQ=",
+        "lastModified": 1793320954,
+        "narHash": "sha256-4MKhlf233qDDsUNDU2qd/PDWNytnTIteAhVSoqsBoB4=",
         "owner": "scuba-plaza",
         "repo": "mufradat",
-        "rev": "a9d2270784a9005eb80dc2fbc091e7c300620c30",
+        "rev": "eb83c840063d07dd05de80f83c224782fcd2f5e5",
         "type": "github"
       },
       "original": {
@@ -175,6 +186,7 @@
     "root": {
       "inputs": {
         "disko": "disko",
+        "gnome-slideshow": "gnome-slideshow",
         "home-manager": "home-manager",
         "mufradat": "mufradat",
         "music-manager": "music-manager",
