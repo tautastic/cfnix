@@ -5,7 +5,7 @@
     dw = "~/Downloads";
     mu = "~/Music";
     uni = "~/Documents/uni";
-    sem = "~/Documents/uni/SoSe26";
+    sem = "~/Documents/uni/WiSe26";
     lbin = "~/.local/bin";
     lcar = "~/.local/care";
     lshr = "~/.local/share";
