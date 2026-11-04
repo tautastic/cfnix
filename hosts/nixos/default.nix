@@ -10,6 +10,7 @@
     ../../modules/locale.nix
     ../../modules/networking.nix
     ../../modules/nix.nix
+    ../../modules/nix-ld.nix
     ../../modules/packages.nix
     ../../modules/services/docker.nix
     ../../modules/services/openssh.nix

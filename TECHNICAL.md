@@ -139,15 +139,15 @@ cannot use `PATH`, and a `/nix/store` path goes stale with every update. So
 `~/.local/share/ide-tools/<ide>/bin/` links the same tools (a `/bin`-only
 `buildEnv`, via `xdg.dataFile`) and is relinked at each activation. WebStorm's
 Biome plugin takes `~/.local/share/ide-tools/webstorm/bin/biome` as its
-executable, written out in full with the home directory expanded. Biome from npm
-does not work here: its prebuilt glibc binary is a generic dynamically linked
-executable, and only the static musl build runs.
+executable, written out in full with the home directory expanded.
 
-**Generic binaries.** NixOS refuses to start dynamically linked executables built
-for other distributions (the `stub-ld` error), and this config has no `nix-ld`.
-That is why the `js` entry sets `NPM_CONFIG_MANAGE_PACKAGE_MANAGER_VERSIONS=false`:
-a `packageManager` pin in a project would otherwise make pnpm download that exact
-release and fail to start it.
+**Generic binaries.** `modules/nix-ld.nix` enables `nix-ld`, so dynamically linked
+executables built for other distributions start instead of failing with the
+`stub-ld` error. That lets projects install their own tools with `pnpm install`,
+such as Cypress, which downloads an Electron binary. The module extends the
+`nix-ld` default libraries with what Electron loads: GTK 3, NSS, NSPR, ALSA, Mesa's
+GBM, DBus, CUPS, Pango, Cairo, and the X11 client libraries. It also means pnpm
+honours a project's `packageManager` pin: it downloads that release and runs it.
 
 **GoLand.** It passes the Global GOPATH from its own settings (Settings > Go >
 GOPATH) to every `go` command, so Nix cannot manage it. It has to be
@@ -159,12 +159,12 @@ An entry's `env` is exported by its dev shell and by every zsh session
 (`programs.zsh.sessionVariables`), and GUI applications inherit it from the
 systemd user session after a login. It holds the XDG locations of each
 toolchain's state (`GOPATH`, `GOMODCACHE`, `ELAN_HOME`, `OPAMROOT`,
-`NPM_CONFIG_CACHE`) and the pnpm setting above.
+`NPM_CONFIG_CACHE`).
 
 ### Lean
 
 Nix provides only `elan` (the `lean` entry). The nixpkgs build patches the
-toolchains it downloads, so no `nix-ld` is needed. Each project pins its toolchain
+toolchains it downloads. Each project pins its toolchain
 in `lean-toolchain` and elan installs it into `~/.local/share/elan` on first use.
 There is no `lean4` package and no elan `bin` directory on `PATH`: the `lean` and
 `lake` on `PATH` are elan's proxies. Mathlib projects must not be built from
