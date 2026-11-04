@@ -50,10 +50,7 @@ in
     music-manager
 
     mistral-vibe-no-tests
-
-    rustdesk-flutter
   ] ++ [
-    pkgs.unstable.picard
     pkgs.unstable.claude-code
     pkgs.unstable.yt-dlp
   ];
