@@ -75,11 +75,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793320954,
-        "narHash": "sha256-4MKhlf233qDDsUNDU2qd/PDWNytnTIteAhVSoqsBoB4=",
+        "lastModified": 1794018904,
+        "narHash": "sha256-nRQ1aIDeqTOeLVqXD3IcfHbyykDiChNI97W4wPRYfq4=",
         "owner": "scuba-plaza",
         "repo": "mufradat",
-        "rev": "eb83c840063d07dd05de80f83c224782fcd2f5e5",
+        "rev": "5c2ee28f79eaeab4c77ed2c87f0e83105750fa10",
         "type": "github"
       },
       "original": {
