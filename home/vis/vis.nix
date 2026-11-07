@@ -1,9 +1,24 @@
-{ ... }:
+{ lib, pkgs, ... }:
 
+let
+  vis-clipboard = pkgs.writeShellApplication {
+    name = "vis-clipboard";
+    runtimeInputs = [ pkgs.wl-clipboard ];
+    text = ''
+      case "''${1:-}" in
+        --copy) wl-copy -t TEXT 2>/dev/null ;;
+        --paste) wl-paste --no-newline -t TEXT ;;
+        *) printf '%s [--copy|--paste]\n' "$(basename "$0")" ;;
+      esac
+    '';
+  };
+in
 {
   imports = [
     ./program-vis.nix
   ];
+
+  home.packages = [ (lib.hiPrio vis-clipboard) ];
 
   programs.vis = {
     enable = true;
