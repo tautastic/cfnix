@@ -6,7 +6,12 @@ let
     doCheck = false;
     doInstallCheck = false;
     passthru = old.passthru // {
-      vibe-rs = old.passthru.vibe-rs.overrideAttrs { doCheck = false; };
+      # aws-lc: cargoSetupHook forces the system AWS-LC, which nixpkgs-unstable
+      # does not give vibe-rs yet (fixed on nixpkgs master)
+      vibe-rs = old.passthru.vibe-rs.overrideAttrs (rs: {
+        doCheck = false;
+        buildInputs = rs.buildInputs ++ [ pkgs.unstable.aws-lc ];
+      });
     };
   });
 
