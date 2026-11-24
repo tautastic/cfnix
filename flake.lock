@@ -75,11 +75,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794764837,
-        "narHash": "sha256-5rGcAmWw4hrWyDTjTeqpTBYWc7SRlgZpFQ6P1qkWRJY=",
+        "lastModified": 1795403840,
+        "narHash": "sha256-e/yN4nensM4cKF+kwnqCmMWD2bZObaIq2Tmt5EENlLQ=",
         "owner": "scuba-plaza",
         "repo": "mufradat",
-        "rev": "22ad956196ca084837c7394ddc3491755fad8193",
+        "rev": "cf7c8d20379533502d6eee2204a8a5f7bae7b03d",
         "type": "github"
       },
       "original": {
@@ -95,11 +95,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794815112,
-        "narHash": "sha256-sXqCn5yXZiz35s22aYqaGUkYNSLHr0xA6tDcSlLPA3M=",
+        "lastModified": 1795512511,
+        "narHash": "sha256-2eV/KLiOhFgNCGojVzasjKolf6XMFgx0XxcApIVC+sI=",
         "owner": "scuba-plaza",
         "repo": "music-manager",
-        "rev": "cb46a90f5a7147e4c7a3430ea45eb6d47b594dca",
+        "rev": "378602489c4592ddebed94b3763e6c6fe8d273b3",
         "type": "github"
       },
       "original": {

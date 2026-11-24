@@ -3,6 +3,7 @@
 {
   imports = [
     ./fonts.nix
+    ./fragments.nix
     ./gapless.nix
     ./git/git.nix
     ./gnome/appearance.nix
