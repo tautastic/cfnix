@@ -14,6 +14,7 @@
     ../../modules/packages.nix
     ../../modules/services/docker.nix
     ../../modules/services/openssh.nix
+    ../../modules/services/udev.nix
     ../../modules/services/postgresql.nix
     ../../modules/users.nix
   ];

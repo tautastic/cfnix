@@ -5,7 +5,7 @@
 
   users.users.${config.me.username} = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "docker" ];
+    extraGroups = [ "wheel" "docker" "dialout" ];
     initialHashedPassword = config.me.passwordHash;
     shell = pkgs.zsh;
   };
